@@ -276,15 +276,24 @@
 							$target.view.model($target.view.scope).splice(targetIndex, 0, spliced[0]);
 
 							// sv-on-sort callback
-							if($target.view !== originatingPart || index !== targetIndex)
-								onSort($scope, {
-									$partTo: $target.view.model($target.view.scope),
-									$partFrom: originatingPart.model(originatingPart.scope),
-									$item: spliced[0],
-									$indexTo: targetIndex,
-									$indexFrom: index
-								});
+							if($target.view !== originatingPart || index !== targetIndex){
+								var sortMethod = onSort;
 
+								//if destination has sv-on-sort call it not the parent's
+								if ($target.view.element && $target.view.element.attr("sv-on-sort")){
+									var destinationOnSort = $target.view.element.scope().$eval($target.view.element.attr("sv-on-sort"))
+									if (destinationOnSort){
+										sortMethod = destinationOnSort;
+									}
+								}
+								sortMethod($scope, {
+										$partTo: $target.view.model($target.view.scope),
+										$partFrom: originatingPart.model(originatingPart.scope),
+										$item: spliced[0],
+										$indexTo: targetIndex,
+										$indexFrom: index
+									});
+							}
 						}
 						$target = void 0;
 
