@@ -57,6 +57,8 @@
 				var onStart = $parse($attrs.svOnStart);
 				var onStop = $parse($attrs.svOnStop);
 
+				this.mapKey = mapKey;
+
 				this.sortingInProgress = function(){
 					return sortingInProgress;
 				};
@@ -278,15 +280,16 @@
 							// sv-on-sort callback
 							if($target.view !== originatingPart || index !== targetIndex){
 								var sortMethod = onSort;
-
+								var destinationScope = $scope;
 								//if destination has sv-on-sort call it not the parent's
 								if ($target.view.element && $target.view.element.attr("sv-on-sort")){
-									var destinationOnSort = $target.view.element.scope().$eval($target.view.element.attr("sv-on-sort"))
+									var destinationScope = $target.view.element.scope();
+									var destinationOnSort = $parse($target.view.element.attr("sv-on-sort"))
 									if (destinationOnSort){
 										sortMethod = destinationOnSort;
 									}
 								}
-								sortMethod($scope, {
+								sortMethod(destinationScope, {
 										$partTo: $target.view.model($target.view.scope),
 										$partFrom: originatingPart.model(originatingPart.scope),
 										$item: spliced[0],
@@ -498,10 +501,20 @@
 						y: (e.clientY - clientRect.top)/clientRect.height
 					};
 					html.addClass('sv-sorting-in-progress');
+
+					var dropzoneClass = 'sv-sorting-'+$controllers[1].mapKey;
+					html.addClass(dropzoneClass);
+
 					html.on('mousemove touchmove', onMousemove).on('mouseup touchend touchcancel', function mouseup(e){
 						html.off('mousemove touchmove', onMousemove);
 						html.off('mouseup touchend', mouseup);
-						html.removeClass('sv-sorting-in-progress');
+
+						// timeout so animation goes to the right element
+						setTimeout(function(){
+							html.removeClass('sv-sorting-in-progress');
+							html.removeClass(dropzoneClass);
+						},300)
+
 						if(moveExecuted){
 							$controllers[0].$drop($scope.$index, opts);
 						}
