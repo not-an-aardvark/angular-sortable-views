@@ -290,12 +290,18 @@
 									}
 								}
 								sortMethod(destinationScope, {
-										$partTo: $target.view.model($target.view.scope),
-										$partFrom: originatingPart.model(originatingPart.scope),
-										$item: spliced[0],
-										$indexTo: targetIndex,
-										$indexFrom: index
-									});
+									$partTo: $target.view.model($target.view.scope),
+									$partFrom: originatingPart.model(originatingPart.scope),
+									$item: spliced[0],
+									$indexTo: targetIndex,
+									$indexFrom: index
+								});
+								var $viewEl = $target.view.element;
+								$viewEl.addClass("sv-dropped");
+								setTimeout(function(){
+									$viewEl.removeClass("sv-dropped");
+									$viewEl = void 0;
+								},300);
 							}
 						}
 						$target = void 0;
@@ -513,7 +519,7 @@
 						setTimeout(function(){
 							html.removeClass('sv-sorting-in-progress');
 							html.removeClass(dropzoneClass);
-						},300)
+						},500)
 
 						if(moveExecuted){
 							$controllers[0].$drop($scope.$index, opts);
