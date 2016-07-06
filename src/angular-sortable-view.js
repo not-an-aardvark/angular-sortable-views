@@ -23,7 +23,7 @@
 
 		var sortingInProgress;
 		var ROOTS_MAP = Object.create(null);
-		// window.ROOTS_MAP = ROOTS_MAP; // for debug purposes
+		window.ROOTS_MAP = ROOTS_MAP; // for debug purposes
 
 		return {
 			restrict: 'A',
@@ -147,7 +147,7 @@
 						});
 						$scope.$root && $scope.$root.$$phase || $scope.$apply();
 					}
-
+					$helper[0].style.position ='fixed';
 					// ----- move the element
 					$helper[0].reposition({
 						x: mouse.x + document.body.scrollLeft - mouse.offset.x*svRect.width,
@@ -169,6 +169,7 @@
 							x: ~~(rect.left + rect.width/2),
 							y: ~~(rect.top + rect.height/2)
 						};
+
 						if(!se.container && // not the container element
 							(se.element[0].scrollHeight || se.element[0].scrollWidth)){ // element is visible
 							candidates.push({
@@ -269,7 +270,10 @@
 
 						if($target){
 							$target.element.removeClass('sv-candidate');
-							var spliced = originatingPart.model(originatingPart.scope).splice(index, 1);
+							var spliced = [originatingPart.model(originatingPart.scope)[index]];
+							if (this.keepInList){
+								spliced = originatingPart.model(originatingPart.scope).splice(index, 1);
+							}
 							var targetIndex = $target.targetIndex;
 							if($target.view === originatingPart && $target.targetIndex > index)
 								targetIndex--;
@@ -335,15 +339,17 @@
 				this.getPart = function(){
 					return $scope.part;
 				};
-				this.$drop = function(index, options){
-					$scope.$sortableRoot.$drop($scope.part, index, options);
-				};
+					this.$drop = function(index, options){
+						$scope.$sortableRoot.$drop($scope.part, index, options);
+					};
 			}],
 			scope: true,
 			link: function($scope, $element, $attrs, $sortable){
 				if(!$attrs.svPart) throw new Error('no model provided');
 				var model = $parse($attrs.svPart);
 				if(!model.assign) throw new Error('model not assignable');
+				$sortable.keepElement = $parse($attrs.svKeepElement)($scope);
+				$scope.$ctrl.isDropzone = $parse($attrs.svIsDropzone)($scope) === false ? false : true;
 
 				$scope.part = {
 					id: $scope.$id,
@@ -358,7 +364,10 @@
 					getPart: $scope.$ctrl.getPart,
 					container: true
 				};
-				$sortable.addToSortableElements(sortablePart);
+
+				if ($scope.$ctrl.isDropzone){
+					$sortable.addToSortableElements(sortablePart);
+				}
 				$scope.$on('$destroy', function(){
 					$sortable.removeFromSortableElements(sortablePart);
 				});
@@ -384,7 +393,9 @@
 						return $scope.$index;
 					}
 				};
-				$controllers[1].addToSortableElements(sortableElement);
+				if ($controllers[0].isDropzone){
+					$controllers[1].addToSortableElements(sortableElement);
+				}
 				$scope.$on('$destroy', function(){
 					$controllers[1].removeFromSortableElements(sortableElement);
 				});
