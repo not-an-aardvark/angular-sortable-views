@@ -271,7 +271,7 @@
 						if($target){
 							$target.element.removeClass('sv-candidate');
 							var spliced = [originatingPart.model(originatingPart.scope)[index]];
-							if (this.keepInList){
+							if (!that.keepInList){
 								spliced = originatingPart.model(originatingPart.scope).splice(index, 1);
 							}
 							var targetIndex = $target.targetIndex;
@@ -348,7 +348,7 @@
 				if(!$attrs.svPart) throw new Error('no model provided');
 				var model = $parse($attrs.svPart);
 				if(!model.assign) throw new Error('model not assignable');
-				$sortable.keepElement = $parse($attrs.svKeepElement)($scope);
+				$sortable.keepInList = $parse($attrs.svKeepInList)($scope);
 				$scope.$ctrl.isDropzone = $parse($attrs.svIsDropzone)($scope) === false ? false : true;
 
 				$scope.part = {
