@@ -1,5 +1,21 @@
-angular-sortable-view v0.0.15 [![Bower version](https://badge.fury.io/bo/angular-sortable-view.svg)](http://badge.fury.io/bo/angular-sortable-view)
+angular-sortable-views v0.0.15-a
 =================
+
+**This is a fork of the [angular-sortable-view](https://github.com/kamilkp/angular-sortable-view) package, with the added ability to dynamically disable dragging on an element.**
+
+```html
+<div sv-disabled="someVariable.draggingIsDisabled" sv-root sv-part="myItems">
+  <div ng-repeat="item in myItems" sv-element>
+    <div>Draggable content</div>
+  </div>
+</div>
+```
+
+```bash
+npm install angular-sortable-views
+```
+
+---
 
 Fully declarative (multi)sortable for AngularJS
 
