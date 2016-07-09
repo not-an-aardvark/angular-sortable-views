@@ -450,11 +450,12 @@
 				}
 
 				function onMousedown(e){
-					touchFix(e);
 
 					if($controllers[1].sortingInProgress()) return;
 					if($controllers[1].sortingDisabled()) return;
 					if(e.button != 0 && e.type === 'mousedown') return;
+
+					touchFix(e);
 
 					moveExecuted = false;
 					var opts = $parse($attrs.svElement)($scope);
